@@ -1,0 +1,129 @@
+http:
+  port: 8080
+
+admin:
+  port: 9876
+  host: localhost
+
+apiEndpoints:
+  books:
+    host: "*"
+    paths: "/api/books/*"
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
+
+  users:
+    host: "*"
+    paths: "/api/users/*"
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
+
+  health:
+    host: "*"
+    paths: "/health"
+    methods: ["GET"]
+
+  swagger:
+    host: "*"
+    paths: "/api-docs*"
+    methods: ["GET"]
+
+serviceEndpoints:
+  bookService:
+    url: "http://localhost:3001"
+
+  userService:
+    url: "http://localhost:3002"
+
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+  - request-transformer
+  - response-transformer
+
+pipelines:
+  bookPipeline:
+    apiEndpoints:
+      - books
+    policies:
+      - cors:
+          - action:
+              origin: "*"
+              credentials: true
+              methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
+              allowedHeaders: "Content-Type,Authorization"
+      - log:
+          - action:
+              message: "📚 Book Service Request: ${req.method} ${req.url}"
+      - request-transformer:
+          - action:
+              headers:
+                add:
+                  X-Gateway: "'my-api-gateway'"
+                  X-Service: "'book-service'"
+      - proxy:
+          - action:
+              serviceEndpoint: bookService
+              changeOrigin: true
+
+  userPipeline:
+    apiEndpoints:
+      - users
+    policies:
+      - cors:
+          - action:
+              origin: "*"
+              credentials: true
+              methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
+              allowedHeaders: "Content-Type,Authorization"
+      - log:
+          - action:
+              message: "👤 User Service Request: ${req.method} ${req.url}"
+      - request-transformer:
+          - action:
+              headers:
+                add:
+                  X-Gateway: "'my-api-gateway'"
+                  X-Service: "'user-service'"
+      - proxy:
+          - action:
+              serviceEndpoint: userService
+              changeOrigin: true
+
+  healthPipeline:
+    apiEndpoints:
+      - health
+    policies:
+      - cors:
+      - log:
+          - action:
+              message: "❤️ Health check"
+      - expression:
+          - action:
+              jscode: |
+                res.json({
+                  status: 'healthy',
+                  timestamp: new Date().toISOString(),
+                  gateway: 'my-api-gateway',
+                  services: {
+                    books: 'http://localhost:3001',
+                    users: 'http://localhost:3002'
+                  },
+                  documentation: 'http://localhost:8080/api-docs'
+                });
+
+  swaggerPipeline:
+    apiEndpoints:
+      - swagger
+    policies:
+      - cors:
+          - action:
+              origin: "*"
+              credentials: true
+      - log:
+          - action:
+              message: "📖 Swagger Documentation Access"
