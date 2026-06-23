@@ -1,0 +1,1 @@
+export {default} from "@/components/nlp/sentimental/index"

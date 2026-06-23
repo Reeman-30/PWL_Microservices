@@ -1,0 +1,1 @@
+export {default} from "@/components/machine-learning/reinforcement/recomendation-system/index"

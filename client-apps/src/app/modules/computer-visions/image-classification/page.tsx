@@ -1,0 +1,1 @@
+export {default} from "@/components/computer-visions/modules/image-clasifications/index"

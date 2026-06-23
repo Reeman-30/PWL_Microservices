@@ -1,0 +1,1 @@
+export {default} from "@/components/computer-visions/modules/object-detections/face-recog/detection-real-time"

@@ -1,0 +1,6 @@
+export {LearningTypes} from "./learning-types" 
+export {TableComparison} from "./table-comparison"
+export {KeyConcepts} from "./key-concepts"
+export {Workflow} from "./workflow"
+export {UseCaseIndustry} from "./use-case-industry"
+export {Footer} from "./footer"
