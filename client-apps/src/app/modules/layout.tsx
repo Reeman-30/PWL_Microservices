@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { ServiceWorkerRegistration } from "@/components/pwa/sw-registration";
 import ProtectedRoute from "@/components/auths/protected-route";
 import Modals from "@/components/ui/modals";
 
@@ -35,6 +36,7 @@ export default function ModulesLayout({
   return (
     <ProtectedRoute>
       {children}
+      <ServiceWorkerRegistration />
       <Modals />
     </ProtectedRoute>
   );
